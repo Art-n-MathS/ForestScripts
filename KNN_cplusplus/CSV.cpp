@@ -90,7 +90,6 @@ double *CSV::getNearestValues(
    std::vector<double> lineSelectedColValues;
    std::vector<std::string> lineValuesStrVector;
    std::istringstream ss( i_line );
-   std::cout << "i_line : " << i_line << "\n";
    while (ss)
    {
      std::string subS;
@@ -106,42 +105,25 @@ double *CSV::getNearestValues(
       {
          highestKNN[k]=0;
       }
-      std::cout << "Line skipped\n";
       return highestKNN;
    }
-
 
    for(unsigned int c=0; c<m_cols.size(); ++c)
    {
       lineSelectedColValues.push_back(atof(lineValuesStrVector[m_cols[c]].c_str()));
    }
-   std::cout<<"\n\n\nSelected labels: \n";
-   for(unsigned int c=0; c<lineSelectedColValues.size(); ++c)
-   {
-     std::cout<<  lineSelectedColValues[c] <<" ";
-   }
-   std::cout<<"\n";
+
    assert(lineSelectedColValues.size()==m_cols.size());
-   for(unsigned int r=0; r<2/*m_noRows*/; ++r)
+   for(unsigned int r=0; r<m_noRows; ++r)
    {
       sum=0;
-
-      std::cout << "First Sample comparison: "  ;
-      for(unsigned int c=0; c<m_cols.size();++c)
-      {
-          std::cout << m_values[m_cols[c]+m_noCols*r] << " "   ;
-      }
 
       for(unsigned int c=0; c<m_cols.size();++c)
       {
          tmp=atof(m_values[m_cols[c]+m_noCols*r].c_str())-lineSelectedColValues[c];
          sum+=(tmp*tmp*double(m_weights[c]));
       }
-
-      std::cout << "\nKNN Result: "<< sqrt(sum) << "\n\n\n";
       knnResults.push_back(sqrt(sum));
-
-
    }
    std::exit(EXIT_SUCCESS);
    return highestKNN;
