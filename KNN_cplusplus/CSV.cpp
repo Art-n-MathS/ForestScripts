@@ -6,11 +6,22 @@
 #include <cstdlib>
 #include <fstream>
 #include<sstream>
+#include <math.h>
 
 //-----------------------------------------------------------------------------
-CSV::CSV(const std::string &i_name):
-    m_csvFile(i_name)
+CSV::CSV(
+        const std::string &i_name,
+        const std::vector<unsigned short int> &i_cols,
+        const std::vector<unsigned short int> &i_weights,
+        unsigned short int i_heightCol
+        ):
+    m_csvFile(i_name),
+    m_cols(i_cols),
+    m_weights(i_weights),
+    m_heightCol(i_heightCol),
+    m_heightThres(20.0)
 {
+    std::cout << "Start reading file: " << m_csvFile << "\n";
     std::ifstream inFile;
     inFile.open(m_csvFile.c_str());
     if(!inFile)
@@ -47,16 +58,94 @@ CSV::CSV(const std::string &i_name):
        std::cout << m_labels[i] << " ";
     }
     std::cout << "\n";
-    m_cols = m_labels.size();
-    m_rows = m_values.size()/m_labels.size();
+    m_noCols = m_labels.size();
+    m_noRows = m_values.size()/m_labels.size();
     unsigned int modVL = m_values.size()%m_labels.size();
-    std::cout << "No of features: " << m_cols << "  -  No of samples: "
-              << m_rows << "  -  modVL(=0): " << modVL << "\n\n";
+    std::cout << "No of features: " << m_noCols << "  -  No of samples: "
+              << m_noRows << "  -  modVL(=0): " << modVL << "\nm_cols      = ";
+    for(unsigned int i=0; i<m_cols.size(); ++i)
+    {
+       std::cout << m_cols[i] << " ";
+    }
+    std::cout << "\nm_weights   = " ;
+
+    for(unsigned int i=0; i<m_weights.size(); ++i)
+    {
+       std::cout << m_weights[i] << " ";
+    }
+
+    std::cout << "\nm_heightCol = " << m_heightCol << "\n\n";
     assert(m_values.size()%m_labels.size()==0);
 }
 
+//-----------------------------------------------------------------------------
+double *CSV::getNearestValues(
+        const std::string &i_line,
+        const unsigned short i_k
+        ) const
+{
+   std::vector<double> knnResults;
+   double *highestKNN = new double[i_k];
+   double sum(0.0),tmp, height;
+   std::vector<double> lineSelectedColValues;
+   std::vector<std::string> lineValuesStrVector;
+   std::istringstream ss( i_line );
+   std::cout << "i_line : " << i_line << "\n";
+   while (ss)
+   {
+     std::string subS;
+     if (!std::getline( ss, subS, ',' )) break;
+     lineValuesStrVector.push_back(subS);
+   }
+   assert(lineValuesStrVector.size()==m_noCols);
+
+   height = atof(lineValuesStrVector[m_heightCol].c_str());
+   if(m_heightThres>height) // pixel is ground, KNN is 0 skipped
+   {
+      for(unsigned int k=0; k<i_k; ++k)
+      {
+         highestKNN[k]=0;
+      }
+      std::cout << "Line skipped\n";
+      return highestKNN;
+   }
 
 
+   for(unsigned int c=0; c<m_cols.size(); ++c)
+   {
+      lineSelectedColValues.push_back(atof(lineValuesStrVector[m_cols[c]].c_str()));
+   }
+   std::cout<<"\n\n\nSelected labels: \n";
+   for(unsigned int c=0; c<lineSelectedColValues.size(); ++c)
+   {
+     std::cout<<  lineSelectedColValues[c] <<" ";
+   }
+   std::cout<<"\n";
+   assert(lineSelectedColValues.size()==m_cols.size());
+   for(unsigned int r=0; r<2/*m_noRows*/; ++r)
+   {
+      sum=0;
+
+      std::cout << "First Sample comparison: "  ;
+      for(unsigned int c=0; c<m_cols.size();++c)
+      {
+          std::cout << m_values[m_cols[c]+m_noCols*r] << " "   ;
+      }
+
+      for(unsigned int c=0; c<m_cols.size();++c)
+      {
+         tmp=atof(m_values[m_cols[c]+m_noCols*r].c_str())-lineSelectedColValues[c];
+         sum+=(tmp*tmp*double(m_weights[c]));
+      }
+
+      std::cout << "\nKNN Result: "<< sqrt(sum) << "\n\n\n";
+      knnResults.push_back(sqrt(sum));
+
+
+   }
+   std::exit(EXIT_SUCCESS);
+   return highestKNN;
+}
 
 
 

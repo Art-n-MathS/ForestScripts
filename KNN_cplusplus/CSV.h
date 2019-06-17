@@ -21,9 +21,22 @@ public:
     /// @param[in] i_isPositive indicates if this CSV files contains positive
     /// or negative samples: 0 for negative and 1 for positive
     //-------------------------------------------------------------------------
-    CSV(const std::string &i_name);
-
-
+    CSV(
+            const std::string &i_name,
+            const std::vector<unsigned short int> &i_cols,
+            const std::vector<unsigned short int> &i_weights,
+            unsigned short int i_heightCol
+            );
+    //-------------------------------------------------------------------------
+    /// @brief method that returns the k nearest values
+    /// @param[in] i_line line of data to be interpreted
+    /// @param[in] i_k number of nearests k values to be returned
+    /// @param[out] a dynamically allocated list of KNN values
+    //-------------------------------------------------------------------------
+    double *getNearestValues(
+            const std::string &i_line,
+            const unsigned short int i_k
+            )const;
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------
@@ -37,11 +50,28 @@ private:
     //-------------------------------------------------------------------------
     /// @brief number of columns
     //-------------------------------------------------------------------------
-    unsigned int m_cols;
+    unsigned int m_noCols;
     //-------------------------------------------------------------------------
     /// @brief number of rows (without the labels row)
     //-------------------------------------------------------------------------
-    unsigned int m_rows;
+    unsigned int m_noRows;
+    //-------------------------------------------------------------------------
+    /// @brief Cols of features to be taken into consideration while performing
+    /// the KNN algorithm
+    //-------------------------------------------------------------------------
+    std::vector<unsigned short int> m_cols;
+    //-------------------------------------------------------------------------
+    /// @brief weight of each feature (each weight corresponds to a column)
+    //-------------------------------------------------------------------------
+    std::vector<unsigned short int> m_weights;
+    //-------------------------------------------------------------------------
+    /// @brief number of column containing heights of middle column
+    //-------------------------------------------------------------------------
+    const unsigned int m_heightCol;
+    //-------------------------------------------------------------------------
+    /// @brief max height to non be considered as ground
+    //-------------------------------------------------------------------------
+    const double m_heightThres;
     //-------------------------------------------------------------------------
     /// @brief labels of the CSV file
     //-------------------------------------------------------------------------

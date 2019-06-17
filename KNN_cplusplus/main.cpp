@@ -12,7 +12,7 @@
 #include <thread>
 #include <map>
 
-#include "CSV.h"
+#include "CSVManager.h"
 
 //-----------------------------------------------------------------------------
 /// @file main.cpp
@@ -33,6 +33,7 @@
 ///                      -cols <col_1> <col_2> ... <col_m>
 ///                      -weights <weight_1> <weight_2> ... <weight_m>
 ///                      -oKKN  <KNN_results.csv>
+///                      -k <no of k in KNN>
 ///
 ///
 /// @note Keeps are the columns are are copied paste to the final .csv file
@@ -43,10 +44,10 @@
             -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv"
             -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4_scaled.csv"
             -heightCol 3 -keeps 0 1 2 3 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6
-            -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN.csv"
+            -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN.csv" -k 7
 
   example in a single line:
--ipos "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_dead_cylinder_vl0.8_H12_R4_scaled.csv" -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv" -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4_scaled.csv"  -heightCol 3 -keeps 0 1 2 3 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6 -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN.csv"
+-ipos "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_dead_cylinder_vl0.8_H12_R4_scaled.csv" -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv" -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4_scaled.csv"  -heightCol 3 -keeps 0 1 2 3 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6 -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN.csv" -k 7
 
 */
 //-----------------------------------------------------------------------------
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
 {
 
     std::string ipos(""), ineg(""), iall(""), oKNN("");
-    unsigned short int heightCol(1000);
+    unsigned short int heightCol(1000),k(1000);
     std::vector<unsigned short int> cols, weights, keeps;
     // PARSING
     // pair arguments to numbers to ease search
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
     tags["-cols"     ] = 5; // -cols <col_1> <col_2> ... <col_m>
     tags["-weights"  ] = 6; // -weights <weight_1> <weight_2> ... <weight_m>
     tags["-oKKN"     ] = 7; // -oKKN  <KNN_results.csv>
+    tags["-k"        ] = 8; // -k <no of k in KNN>
     tags["-iall"     ] = 9; // -iall <all_pixels_feature_vectors.csv>
 
     try
@@ -142,6 +144,15 @@ int main(int argc, char *argv[])
              }
              break;
          }
+         case 8: // -k <no of k in KNN>
+         {
+            argvIndex ++;
+            if (argvIndex<argc)
+            {
+               k = atoi(argv[argvIndex]);
+            }
+            break;
+         }
          case 9: // -iall <all_pixels_feature_vectors.csv>
          {
              argvIndex++;
@@ -172,16 +183,16 @@ int main(int argc, char *argv[])
                   << "               -cols <col_1> <col_2> ... <col_m>\n"
                   << "               -weights <weight_1> <weight_2> ... <weight_m>\n"
                   << "               -oKKN  <KNN_results.csv>\n"
+                  << "               -k <no of k in KNN>\n"
                   << "\n WARNING: No of cols must be equal to no of weights\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(20000));
         return EXIT_FAILURE;
      }
-    std::cout << "   *** iall before 2nd retrival: " << iall  << "\n";
 
 
 
     if (ipos=="" || ineg=="" || iall=="" || heightCol==1000 ||cols.size()==0 ||
-            weights.size()!=cols.size() || oKNN=="")
+            weights.size()!=cols.size() || oKNN=="" || k==1000)
     {
         std::cout << "ERROR: Missing arguments. Please use the following format:\n"
                   << " KNN_cplusplus -ipos <positive_feature_vectors.csv>\n"
@@ -192,40 +203,41 @@ int main(int argc, char *argv[])
                   << "               -cols <col_1> <col_2> ... <col_m>\n"
                   << "               -weights <weight_1> <weight_2> ... <weight_m>\n"
                   << "               -oKKN  <KNN_results.csv>\n"
+                  << "               -k <no of k in KNN>\n"
                   << "\n WARNING: No of cols must be equal to no of weights\n";
         std::exit(EXIT_FAILURE);
     }
 
 
     // print read parameters
-    std::cout << "ipos= "      << ipos      << "\n";
-    std::cout << "ineg= "      << ineg      << "\n";
-    std::cout << "iall= "      << iall      << "\n";
-    std::cout << "oKNN= "      << oKNN      << "\n";
-    std::cout << "heightCol= " << heightCol << "\n";
-    std::cout << "keeps= ";
+    std::cout << "ipos      = " << ipos      << "\n";
+    std::cout << "ineg      = " << ineg      << "\n";
+    std::cout << "iall      = " << iall      << "\n";
+    std::cout << "oKNN      = " << oKNN      << "\n";
+    std::cout << "heightCol = " << heightCol << "\n";
+    std::cout << "k         = " << k         << "\n";
+    std::cout << "keeps     = ";
     for(unsigned short int i=0;i<keeps.size();++i)
     {
        std::cout << keeps[i] << " ";
     }
     std::cout <<"\n";
-    std::cout << "cols= ";
+    std::cout << "cols      = ";
     for(unsigned short int i=0;i<cols.size();++i)
     {
        std::cout << cols[i] << " ";
     }
     std::cout <<"\n";
-    std::cout << "weights= ";
+    std::cout << "weights   = ";
     for(unsigned short int i=0;i<weights.size();++i)
     {
        std::cout << weights[i] << " ";
     }
     std::cout <<"\n\n";
 
-    std::cout << "Reading Positive and Negative Samples\n";
 
-    CSV posSamples(ipos);
-    CSV negSamples(ineg);
+    CSVManager csvManager(ipos,ineg,iall,oKNN,heightCol,cols,weights,keeps,k);
+    csvManager.interpret();
 
 
     std::cout << "   ***   EXIT   ***\n";
