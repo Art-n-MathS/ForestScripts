@@ -41,85 +41,126 @@ CSVManager::CSVManager(
 //-----------------------------------------------------------------------------
 void CSVManager::interpret()
 {
-    std::ifstream inFile;
-    std::string line;
-    inFile.open(m_iall.c_str());
-    if(!inFile)
-    {
-       std::cerr << "ERROR: File \"" << m_iall << "\" doesn't exist\n";
-       std::exit(EXIT_FAILURE);
-    }
+   std::ifstream inFile;
+   std::string line;
+   inFile.open(m_iall.c_str());
+   if(!inFile)
+   {
+      std::cerr << "ERROR: File \"" << m_iall << "\" doesn't exist\n";
+      std::exit(EXIT_FAILURE);
+   }
+   std::ofstream myfile;
+   myfile.open(m_oKNN);
+   if (!myfile)
+   {
+      std::cerr << "ERROR: Could not create \"" << m_oKNN << "\" file\n";
+      std::exit(EXIT_FAILURE);
+   }
 
-    std::cout << "   ***  Starting KNN  ***\n";
-    if (std::getline(inFile,line)) // skip labels
-    {
-       /// TO DO: export keeps and m_cols to output KNN file
-    }
-
-    while(std::getline(inFile,line) )
-    {
-      if (line.c_str()[0]==',')continue;
-
-      double *posKNN = m_posSamples.getNearestValues(line,m_k);
-      double sumpos(0.0);
-      for(unsigned int k=0; k<m_k; ++k)
+   myfile << "Hello World";
+   std::vector<std::string> labels;
+   std::cout << "   ***  Starting KNN  ***\n";
+   if (std::getline(inFile,line)) // skip labels
+   {
+      std::cout << "\n   **** " << line << "\n\n";
+      std::istringstream ss( line );
+      while (ss)
       {
-         sumpos+=posKNN[k];
+         std::string subS;
+         if (!std::getline( ss, subS, ',' )) break;
+         labels.push_back(subS);
       }
-      if(sumpos<0.00001)
+      for(unsigned int i=0; i<m_keeps.size(); ++i)
       {
-         /// TO DO export zero to the corresponding col
-         delete posKNN;
-         continue;
+         myfile << labels[m_keeps[i]] << ",";
       }
+      myfile << "KNN\n";
+      /// TO DO: export keeps and m_cols to output KNN file
+   }
 
-      double *negKNN = m_negSamples.getNearestValues(line,m_k);
+   while(std::getline(inFile,line) )
+   {
+     if (line.c_str()[0]==',')continue;
+     labels.clear();
+     std::istringstream ss( line );
+     while (ss)
+     {
+        std::string subS;
+        if (!std::getline( ss, subS, ',' )) break;
+        labels.push_back(subS);
+     }
+     for(unsigned int i=0; i<m_keeps.size(); ++i)
+     {
+        myfile << labels[m_keeps[i]] << ",";
+     }
+     double *posKNN = m_posSamples.getNearestValues(line,m_k);
+     double sumpos(0.0);
+     for(unsigned int k=0; k<m_k; ++k)
+     {
+        sumpos+=posKNN[k];
+     }
+     if(sumpos<0.00001)
+     {
+        myfile << 0 << "\n";
+        delete posKNN;
+        continue;
+     }
 
-      std::vector<double> posKNNSelected, negKNNSelected;
-      unsigned short int countPos(0),countNeg(0);
-      while (posKNNSelected.size()+negKNNSelected.size()<m_k)
-      {
-          if(posKNN[countPos]<=negKNN[countNeg])
-          {
-             posKNNSelected.push_back(100.0/posKNN[countPos]);
-             countPos++;
-          }
-          else
-          {
-             negKNNSelected.push_back(100.0/negKNN[countNeg]);
-             countNeg++;
-          }
-      }
-      std::cout << "+ posKNN : " ;
-      for(unsigned int k=0; k<countPos; ++k)
-      {
-         std::cout << posKNNSelected[k] << " ";
-      }
-      std::cout << "\n";
+     double *negKNN = m_negSamples.getNearestValues(line,m_k);
 
-      std::cout << "+ negKNN : " ;
-      for(unsigned int k=0; k<countNeg; ++k)
-      {
-         std::cout << negKNNSelected[k] << " ";
-      }
-      std::cout << "\n";
+     std::vector<double> posKNNSelected, negKNNSelected;
+     unsigned short int countPos(0),countNeg(0);
+     double sumPos(0.0),sumNeg(0.0);
+     while (posKNNSelected.size()+negKNNSelected.size()<m_k)
+     {
+         if(posKNN[countPos]<=negKNN[countNeg])
+         {
+            posKNNSelected.push_back(100.0/posKNN[countPos]);
+            sumPos+=100.0/posKNN[countPos];
+            countPos++;
+         }
+         else
+         {
+            negKNNSelected.push_back(100.0/negKNN[countNeg]);
+            sumNeg+=100.0/negKNN[countNeg];
+            countNeg++;
+         }
+     }
+     std::cout << "+ posKNN : " ;
+     for(unsigned int k=0; k<countPos; ++k)
+     {
+        std::cout << posKNNSelected[k] << " ";
+     }
+     std::cout << "\n";
+     std::cout << "sumPos= " << sumPos << "\n";
 
-      if(posKNN[0]!=0)
-      {
-         std::exit(EXIT_FAILURE);
-      }
-//      std::istringstream ss( line );
-//      while (ss)
-//      {
-//        std::string subS;
-//        if (!std::getline( ss, subS, ',' )) break;
-////        knnResults.push_back(subS);
-//      }
-      delete posKNN;
-      delete negKNN;
-    }
+     std::cout << "+ negKNN : " ;
+     for(unsigned int k=0; k<countNeg; ++k)
+     {
+        std::cout << negKNNSelected[k] << " ";
+     }
+     std::cout << "\n";
+     std::cout << "sumNeg= " << sumNeg << "\n\n";
 
-     inFile.close();
+     std::cout << "KNN = " << sumPos/(sumNeg+sumPos) << "\n\n";
+     std::cout << "(sumNeg+sumPos) = " << (sumNeg+sumPos) << "\n\n";
+
+     myfile << 100.0*sumPos/(sumNeg+sumPos) << "\n";
+
+     if(posKNN[0]!=0)
+     {
+
+         myfile.close();
+         inFile.close();
+        std::exit(EXIT_FAILURE);
+     }
+
+     delete posKNN;
+     delete negKNN;
+   }
+
+    myfile.close();
+    inFile.close();
 }
 
 
