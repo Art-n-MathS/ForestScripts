@@ -50,11 +50,64 @@ void CSVManager::interpret()
        std::exit(EXIT_FAILURE);
     }
 
-    while(std::getline(inFile,line))
+    std::cout << "   ***  Starting KNN  ***\n";
+    if (std::getline(inFile,line)) // skip labels
     {
+       /// TO DO: export keeps and m_cols to output KNN file
+    }
+
+    while(std::getline(inFile,line) )
+    {
+      if (line.c_str()[0]==',')continue;
+
       double *posKNN = m_posSamples.getNearestValues(line,m_k);
+      double sumpos(0.0);
+      for(unsigned int k=0; k<m_k; ++k)
+      {
+         sumpos+=posKNN[k];
+      }
+      if(sumpos<0.00001)
+      {
+         /// TO DO export zero to the corresponding col
+         delete posKNN;
+         continue;
+      }
+
       double *negKNN = m_negSamples.getNearestValues(line,m_k);
 
+      std::vector<double> posKNNSelected, negKNNSelected;
+      unsigned short int countPos(0),countNeg(0);
+      while (posKNNSelected.size()+negKNNSelected.size()<m_k)
+      {
+          if(posKNN[countPos]<=negKNN[countNeg])
+          {
+             posKNNSelected.push_back(100.0/posKNN[countPos]);
+             countPos++;
+          }
+          else
+          {
+             negKNNSelected.push_back(100.0/negKNN[countNeg]);
+             countNeg++;
+          }
+      }
+      std::cout << "+ posKNN : " ;
+      for(unsigned int k=0; k<countPos; ++k)
+      {
+         std::cout << posKNNSelected[k] << " ";
+      }
+      std::cout << "\n";
+
+      std::cout << "+ negKNN : " ;
+      for(unsigned int k=0; k<countNeg; ++k)
+      {
+         std::cout << negKNNSelected[k] << " ";
+      }
+      std::cout << "\n";
+
+      if(posKNN[0]!=0)
+      {
+         std::exit(EXIT_FAILURE);
+      }
 //      std::istringstream ss( line );
 //      while (ss)
 //      {
