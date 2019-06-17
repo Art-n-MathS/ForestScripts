@@ -133,7 +133,6 @@ double *CSV::getNearestValues(
    {
       highestKNN[i] = knnResults[i] ;
    }
-   std::cout << "\n";
    return highestKNN;
 }
 

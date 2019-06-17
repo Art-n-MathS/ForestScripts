@@ -62,7 +62,6 @@ void CSVManager::interpret()
    std::cout << "   ***  Starting KNN  ***\n";
    if (std::getline(inFile,line)) // skip labels
    {
-      std::cout << "\n   **** " << line << "\n\n";
       std::istringstream ss( line );
       while (ss)
       {
@@ -126,34 +125,10 @@ void CSVManager::interpret()
             countNeg++;
          }
      }
-     std::cout << "+ posKNN : " ;
-     for(unsigned int k=0; k<countPos; ++k)
-     {
-        std::cout << posKNNSelected[k] << " ";
-     }
-     std::cout << "\n";
-     std::cout << "sumPos= " << sumPos << "\n";
 
-     std::cout << "+ negKNN : " ;
-     for(unsigned int k=0; k<countNeg; ++k)
-     {
-        std::cout << negKNNSelected[k] << " ";
-     }
-     std::cout << "\n";
-     std::cout << "sumNeg= " << sumNeg << "\n\n";
-
-     std::cout << "KNN = " << sumPos/(sumNeg+sumPos) << "\n\n";
-     std::cout << "(sumNeg+sumPos) = " << (sumNeg+sumPos) << "\n\n";
 
      myfile << 100.0*sumPos/(sumNeg+sumPos) << "\n";
 
-     if(posKNN[0]!=0)
-     {
-
-         myfile.close();
-         inFile.close();
-        std::exit(EXIT_FAILURE);
-     }
 
      delete posKNN;
      delete negKNN;
