@@ -20,3 +20,4 @@ SOURCES += main.cpp \
 
 HEADERS += \
     CSV.h
+QMAKE_CXXFLAGS += -std=c++11

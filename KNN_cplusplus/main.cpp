@@ -5,7 +5,12 @@
 #include <fstream>
 #include<sstream>
 #include <iomanip>
-
+#include <exception>
+#include <iterator>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+#include <map>
 
 //-----------------------------------------------------------------------------
 /// @file main.cpp
@@ -45,181 +50,175 @@
 int main(int argc, char *argv[])
 {
 
-
-//    std::string input;
-//    std::string output;
-//    std::string line;
-//    std::vector<std::string> LineVector;
-//    int columnX = -1;
-//    int columnY = -1;
-////    std::vector<Line *> m_lines;
-//    std::string labelsStr;
-//    double precision(0.001);
-
-//    for( int i=1; i<argc; ++i)
-//    {
-//       if(std::string(argv[i])=="-i" && i+1<=argc)
-//       {
-//          ++i;
-//          input = argv[i];
-//       }
-//       else if( std::string(argv[i]) == "-o" && i+1<argc)
-//       {
-//          ++i;
-//          output = argv[i];
-//       }
-//       else if( std::string(argv[i]) == "-p" && i+1<argc)
-//       {
-//          ++i;
-//          precision = atof(argv[i]);
-//       }
-//       else
-//       {
-//          std::cerr << "WARNING: unknown tag : " <<argv[i] << "\n";
-//       }
-//    }
-
-//    if(input=="" || output=="")
-//    {
-//       std::cerr << "ERROR: Missing Arguments\n";
-//       return EXIT_FAILURE;
-//    }
+std::string ipos(""), ineg(""), iall(""), oKNN("");
+unsigned short int heightCol(1000),iallIndex(0);
+std::vector<unsigned short int> cols, weights, keeps;
+// PARSING
+// pair arguments to numbers to ease search
+std::map<std::string, int> tags;
 
 
+tags["-ipos"     ] = 1; // -ipos <positive_feature_vectors.csv>
+tags["-ineg"     ] = 2; // -ineg <negative_feature_vectors.csv>
+tags["-heightCol"] = 3; // -heightCol <col>
+tags["-keeps"    ] = 4; // -keeps <col_1> <col_2> ... <col_n>
+tags["-cols"     ] = 5; // -cols <col_1> <col_2> ... <col_m>
+tags["-weights"  ] = 6; // -weights <weight_1> <weight_2> ... <weight_m>
+tags["-oKKN"     ] = 7; // -oKKN  <KNN_results.csv>
+tags["-iall"     ] = 9; // -iall <all_pixels_feature_vectors.csv>
 
-//    std::cout << "Input: " << input << "\n";
-//    std::cout << "Output: " << output << "\n";
-
-//    std::ifstream inFile;
-//    inFile.open(input.c_str());
-//    if(!inFile)
-//    {
-//       std::cerr << "ERROR: File doesn't exist\n";
-//       return EXIT_FAILURE;
-//    }
-//    std::ofstream outFile;
-//    outFile.open(output.c_str());
-//    if(!outFile)
-//    {
-//       std::cerr << "ERROR: couldn't create file\n";
-//       return EXIT_FAILURE;
-//    }
-//    if(std::getline(inFile,labelsStr))
-//    {
-//       // read labels
-//       std::istringstream ss( labelsStr );
-//       while (ss)
-//       {
-//          std::string subS;
-//          if (!std::getline( ss, subS, ',' )) break;
-//          LineVector.push_back(subS);
-//       }
-//       for(unsigned int i=0; i<LineVector.size(); ++i)
-//       {
-//          if(LineVector[i]=="x" || LineVector[i] == "X")
-//          {
-//             columnX = i;
-//          }
-//          else if(LineVector[i]=="y" || LineVector[i] == "Y")
-//          {
-//             columnY = i;
-//          }
-//       }
-//       if(columnX<0 || columnY<0)
-//       {
-//          std::cout << "ERROR: missing X or Y column\n";
-//          return EXIT_FAILURE;
-//       }
-//       outFile << labelsStr << "\n";
-//    }
-//    else
-//    {
-//       std::cerr << "ERROR: empty file\n";
-//       return EXIT_FAILURE;
-//    }
-//    LineVector.clear();
-
-//    while(std::getline(inFile,line))
-//    {
-//      std::istringstream ss( line );
-//      while (ss)
-//      {
-//        std::string subS;
-//        if (!std::getline( ss, subS, ',' )) break;
-//        LineVector.push_back(subS);
-//      }
-//      m_lines.push_back(new Line(atof(LineVector[columnX].c_str()),
-//                                 atof(LineVector[columnY].c_str()),
-//                                 line));
-//      LineVector.clear();
-//    }
-
-//    std::cout << "number of trees = " << m_lines.size()-1 << "\n";
-
-//    // sort lines
-//     unsigned int len = m_lines.size();
-//      // allocate memory for temporarly saved values
-//      std::vector<Line *> tempValues;
-//      tempValues.resize(len);
-
-//      // sort y axis
-//      for(int step=2; step/2 < len; step*=2)
-//      {
-//         for(unsigned int i=0; i < len; i+=step)
-//         {
-//            int endOfT2 = i+step;
-//            if(i+ step/2 >= len)
-//            {
-//               continue;
-//            }
-//            else if (i+step >= len)
-//            {
-//               endOfT2 = len;
-//            }
-//            // both sets have step/2 items.
-//            // t1 points to the first set of values
-//            int t1 = i;
-//            // t2 points to the second set of values
-//            int t2 = i+step/2;
-//            // here we save all the values that have been overridden from the first set
-//            unsigned int tempIndex=0;
-//            while(t1 < i+step/2 && t2 < endOfT2)
-//            {
-//               if(m_lines[t1]->m_y>m_lines[t2]->m_y)
-//               {
-//                  tempValues[tempIndex]=m_lines[t1];
-//                  t1++;
-//               }
-//               else
-//               {
-//                  tempValues[tempIndex]=m_lines[t2];
-//                  t2++;
-//               }
-//               tempIndex++;
-//            }
-//            while(t1 < i+step/2)
-//            {
-//               tempValues[tempIndex]=m_lines[t1];
-//               t1++;
-//               tempIndex++;
-//            }
-//            // write values back to the array
-//            for(unsigned int t=0; t < tempIndex; ++t)
-//            {
-//                m_lines[i+t]=tempValues[t];
-//            }
-//         }
-//      }
+try
+{
+  int argvIndex = 1;
+  while(argvIndex<argc)
+  {
+     switch (tags[argv[argvIndex]])
+     {
+     case 1: //  -ipos <positive_feature_vectors.csv>
+     {
+        argvIndex ++;
+        if (argvIndex<argc)
+        {
+           ipos = argv[argvIndex];
+        }
+        break;
+     }
+     case 2: //  -ineg <negative_feature_vectors.csv>
+     {
+        argvIndex ++;
+        if (argvIndex<argc)
+        {
+           ineg = argv[argvIndex];
+        }
+        break;
+     }
+     case 3: // -heightCol <col>
+     {
+        argvIndex ++;
+        if (argvIndex<argc)
+        {
+           heightCol = atoi(argv[argvIndex]);
+        }
+        break;
+     }
+     case 4: //  -keeps <col_1> <col_2> ... <col_n>
+     {
+        while (argvIndex+1<argc && argv[argvIndex+1][0]!='-')
+        {
+           argvIndex++;
+           keeps.push_back(atoi(argv[argvIndex]));
+        }
+        break;
+     }
+     case 5: // -cols <col_1> <col_2> ... <col_m>
+     {
+        while (argvIndex+1<argc && argv[argvIndex+1][0]!='-')
+        {
+           argvIndex++;
+           cols.push_back(atoi(argv[argvIndex]));
+        }
+        break;
+     }
+     case 6: // -weights <weight_1> <weight_2> ... <weight_m>
+     {
+        while (argvIndex+1<argc && argv[argvIndex+1][0]!='-')
+        {
+           argvIndex++;
+           weights.push_back(atoi(argv[argvIndex]));
+        }
+        break;
+     }
+     case 7: // -oKKN  <KNN_results.csv>
+     {
+         argvIndex++;
+         if (argvIndex<argc)
+         {
+            oKNN = argv[argvIndex];
+         }
+         break;
+     }
+     case 9: // -iall <all_pixels_feature_vectors.csv>
+     {
+         argvIndex++;
+         if (argvIndex<argc)
+         {
+            iall = argv[argvIndex];
+         }
+         break;
+     }
+     default:
+     {
+        std::cout << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
+        break;
+     }
+     }
+     argvIndex++;
+  }
+ }
+ catch (char const* e)
+ {
+    std::cout << e  << std::endl;
+    std::cout << "Please use the following format:\n"
+              << " KNN_cplusplus -ipos <positive_feature_vectors.csv>\n"
+              << "               -ineg <negative_feature_vectors.csv>\n"
+              << "               -iall <all_pixels_feature_vectors.csv>\n"
+              << "               -heightCol <col>\n"
+              << "               -keeps <col_1> <col_2> ... <col_n>\n"
+              << "               -cols <col_1> <col_2> ... <col_m>\n"
+              << "               -weights <weight_1> <weight_2> ... <weight_m>\n"
+              << "               -oKKN  <KNN_results.csv>\n"
+              << "\n WARNING: No of cols must be equal to no of weights\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(20000));
+    return EXIT_FAILURE;
+ }
+std::cout << "   *** iall before 2nd retrival: " << iall  << "\n";
 
 
 
+if (ipos=="" || ineg=="" || iall=="" || heightCol==1000 ||cols.size()==0 ||
+        weights.size()!=cols.size() || oKNN=="")
+{
+    std::cout << "ERROR: Missing arguments. Please use the following format:\n"
+              << " KNN_cplusplus -ipos <positive_feature_vectors.csv>\n"
+              << "               -ineg <negative_feature_vectors.csv>\n"
+              << "               -iall <all_pixels_feature_vectors.csv>\n"
+              << "               -heightCol <col>\n"
+              << "               -keeps <col_1> <col_2> ... <col_n>\n"
+              << "               -cols <col_1> <col_2> ... <col_m>\n"
+              << "               -weights <weight_1> <weight_2> ... <weight_m>\n"
+              << "               -oKKN  <KNN_results.csv>\n"
+              << "\n WARNING: No of cols must be equal to no of weights\n";
+    std::exit(EXIT_FAILURE);
+}
 
-//    for(unsigned int i=0; i<m_lines.size(); ++i)
-//    {
-//       delete m_lines[i];
-//    }
-//    inFile.close();
-//    outFile.close();
+
+// print read parameters
+std::cout << "ipos= "      << ipos      << "\n";
+std::cout << "ineg= "      << ineg      << "\n";
+std::cout << "iall= "      << iall      << "\n";
+std::cout << "oKNN= "      << oKNN      << "\n";
+std::cout << "heightCol= " << heightCol << "\n";
+std::cout << "keeps= ";
+for(unsigned short int i=0;i<keeps.size();++i)
+{
+   std::cout << keeps[i] << " ";
+}
+std::cout <<"\n";
+std::cout << "cols= ";
+for(unsigned short int i=0;i<cols.size();++i)
+{
+   std::cout << cols[i] << " ";
+}
+std::cout <<"\n";
+std::cout << "weights= ";
+for(unsigned short int i=0;i<weights.size();++i)
+{
+   std::cout << weights[i] << " ";
+}
+std::cout <<"\n";
+
+
+
 
     std::cout << "   ***   EXIT   ***\n";
     return EXIT_SUCCESS;
