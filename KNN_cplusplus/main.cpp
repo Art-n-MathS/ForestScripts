@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 {
 
     std::string ipos(""), ineg(""), iall(""), oKNN("");
-    unsigned short int heightCol(1000),iallIndex(0);
+    unsigned short int heightCol(1000);
     std::vector<unsigned short int> cols, weights, keeps;
     // PARSING
     // pair arguments to numbers to ease search

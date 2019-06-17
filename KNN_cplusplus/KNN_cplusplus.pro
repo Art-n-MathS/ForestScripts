@@ -16,8 +16,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    CSV.cpp
+    CSV.cpp \
+    CSVManager.cpp
 
 HEADERS += \
-    CSV.h
+    CSV.h \
+    CSVManager.h
 QMAKE_CXXFLAGS += -std=c++11
