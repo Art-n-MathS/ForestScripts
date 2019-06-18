@@ -29,6 +29,14 @@ public:
             double i_heightThres
             );
     //-------------------------------------------------------------------------
+    /// @brief method that returns the number of samples stored
+    //-------------------------------------------------------------------------
+    int getNoOfSamples()const;
+    //-------------------------------------------------------------------------
+    /// @brief method that sets m_noRowsOfPosSamples
+    //-------------------------------------------------------------------------
+    void setNoRowsOfPosSamples(int i_noOfPosSamples);
+    //-------------------------------------------------------------------------
     /// @brief method that returns the k nearest values
     /// @param[in] i_line line of data to be interpreted
     /// @param[in] i_k number of nearests k values to be returned
@@ -56,6 +64,12 @@ private:
     /// @brief number of rows (without the labels row)
     //-------------------------------------------------------------------------
     unsigned int m_noRows;
+    //-------------------------------------------------------------------------
+    /// @brief number of rows of Positive Samples, since they are less in
+    /// number and need to reduce the number of Neg Samples to reduce bias
+    /// @note if this class contains pos samples then it takes the value "-1.0"
+    //-------------------------------------------------------------------------
+    int m_noRowsOfPosSamples;
     //-------------------------------------------------------------------------
     /// @brief Cols of features to be taken into consideration while performing
     /// the KNN algorithm

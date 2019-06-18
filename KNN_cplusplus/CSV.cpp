@@ -19,6 +19,7 @@ CSV::CSV(
         double i_heightThres
         ):
     m_csvFile(i_name),
+    m_noRowsOfPosSamples(-3000),
     m_cols(i_cols),
     m_weights(i_weights),
     m_heightCol(i_heightCol),
@@ -83,6 +84,19 @@ CSV::CSV(
 }
 
 //-----------------------------------------------------------------------------
+int CSV::getNoOfSamples()const
+{
+    return m_noRows;
+}
+
+//-----------------------------------------------------------------------------
+void CSV::setNoRowsOfPosSamples(int i_noOfPosSamples)
+{
+   m_noRowsOfPosSamples=i_noOfPosSamples;
+
+}
+
+//-----------------------------------------------------------------------------
 double *CSV::getNearestValues(
         const std::string &i_line,
         const unsigned short i_k
@@ -118,7 +132,9 @@ double *CSV::getNearestValues(
     }
 
     assert(lineSelectedColValues.size()==m_cols.size());
-    for(unsigned int r=0; r<m_noRows; ++r)
+    unsigned int step = floor(double (m_noRows)/double(m_noRowsOfPosSamples));
+    unsigned int mo = m_noRowsOfPosSamples%m_noRows;
+    for(unsigned int r=0; r<m_noRows-(mo!=0); r+=step)
     {
        sum=0;
 
@@ -129,7 +145,6 @@ double *CSV::getNearestValues(
        }
        knnResults.push_back(sqrt(sum));
     }
-
    std::sort(knnResults.begin(), knnResults.end());
    for(unsigned int i=0; i<i_k; ++i)
    {

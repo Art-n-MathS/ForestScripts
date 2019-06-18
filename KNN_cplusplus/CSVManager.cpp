@@ -27,6 +27,10 @@ CSVManager::CSVManager(
     m_keeps(i_keeps),
     m_k(i_k)
 {
+   int noOfPosSample(m_posSamples.getNoOfSamples());
+   m_posSamples.setNoRowsOfPosSamples(noOfPosSample);
+   m_negSamples.setNoRowsOfPosSamples(noOfPosSample);
+
    std::cout << "Initialisation of CSVManager completed:";
    std::cout << "\nm_iall      = " << m_iall ;
    std::cout << "\nm_k         = " << m_k;
@@ -58,7 +62,6 @@ void CSVManager::interpret()
       std::exit(EXIT_FAILURE);
    }
 
-   myfile << "Hello World";
    std::vector<std::string> labels;
    std::cout << "   ***  Starting KNN  ***\n";
    if (std::getline(inFile,line)) // skip labels
@@ -75,7 +78,6 @@ void CSVManager::interpret()
          myfile << labels[m_keeps[i]] << ",";
       }
       myfile << "KNN\n";
-      /// TO DO: export keeps and m_cols to output KNN file
    }
 
    while(std::getline(inFile,line) )
