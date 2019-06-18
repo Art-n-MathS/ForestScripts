@@ -15,13 +15,14 @@ CSV::CSV(
         const std::string &i_name,
         const std::vector<unsigned short int> &i_cols,
         const std::vector<unsigned short int> &i_weights,
-        unsigned short int i_heightCol
+        unsigned short int i_heightCol,
+        double i_heightThres
         ):
     m_csvFile(i_name),
     m_cols(i_cols),
     m_weights(i_weights),
     m_heightCol(i_heightCol),
-    m_heightThres(20.0)
+    m_heightThres(i_heightThres)
 {
     std::cout << "Start reading file: " << m_csvFile << "\n";
     std::ifstream inFile;
@@ -76,7 +77,8 @@ CSV::CSV(
        std::cout << m_weights[i] << " ";
     }
 
-    std::cout << "\nm_heightCol = " << m_heightCol << "\n\n";
+    std::cout << "\nm_heightCol   = " << m_heightCol ;
+    std::cout << "\nm_heightThres = " << m_heightThres << "\n\n";
     assert(m_values.size()%m_labels.size()==0);
 }
 
@@ -101,7 +103,7 @@ double *CSV::getNearestValues(
     assert(lineValuesStrVector.size()==m_noCols);
 
     height = atof(lineValuesStrVector[m_heightCol].c_str());
-    if(m_heightThres>height) // pixel is ground, KNN is 0 skipped
+    if(m_heightThres>0.0 && m_heightThres>height) // pixel is ground, KNN is 0 skipped
     {
        for(unsigned int k=0; k<i_k; ++k)
        {

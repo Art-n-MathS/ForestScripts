@@ -17,10 +17,11 @@ CSVManager::CSVManager(
         const std::vector<unsigned short int> &i_cols,
         const std::vector<unsigned short int> &i_weights,
         const std::vector<unsigned short int> &i_keeps,
-        const unsigned short int i_k
+        const unsigned short int i_k,
+        double i_heightThres
         ):
-    m_posSamples(i_ipos,i_cols,i_weights,i_heightCol),
-    m_negSamples(i_ineg,i_cols,i_weights,i_heightCol),
+    m_posSamples(i_ipos,i_cols,i_weights,i_heightCol,i_heightThres),
+    m_negSamples(i_ineg,i_cols,i_weights,i_heightCol,i_heightThres),
     m_iall(i_iall),
     m_oKNN(i_oKNN),
     m_keeps(i_keeps),

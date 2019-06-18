@@ -25,7 +25,8 @@ public:
             const std::string &i_name,
             const std::vector<unsigned short int> &i_cols,
             const std::vector<unsigned short int> &i_weights,
-            unsigned short int i_heightCol
+            unsigned short int i_heightCol,
+            double i_heightThres
             );
     //-------------------------------------------------------------------------
     /// @brief method that returns the k nearest values

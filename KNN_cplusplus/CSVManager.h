@@ -28,7 +28,8 @@ public:
             const std::vector<unsigned short int> &i_cols,
             const std::vector<unsigned short int> &i_weights,
             const std::vector<unsigned short int> &i_keeps,
-            const unsigned short int i_k
+            const unsigned short int i_k,
+            double i_heightThres
             );
     //-------------------------------------------------------------------------
     /// @brief method that interprets data and exports KNN results into .csv
