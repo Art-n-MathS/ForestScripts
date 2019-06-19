@@ -114,7 +114,9 @@ double *CSV::getNearestValues(
       if (!std::getline( ss, subS, ',' )) break;
       lineValuesStrVector.push_back(subS);
     }
-    assert(lineValuesStrVector.size()==m_noCols);
+//    std::cout <<i_line << "\n";
+//    std::cout << lineValuesStrVector.size()<<  "   -    " <<  m_noCols << " " << m_cols.size()<< " m_labels.size()=" <<m_labels.size()<< "\n";
+//    assert(lineValuesStrVector.size()==m_labels.size());
 
     height = atof(lineValuesStrVector[m_heightCol].c_str());
     if(m_heightThres>0.0 && m_heightThres>height) // pixel is ground, KNN is 0 skipped
@@ -130,6 +132,8 @@ double *CSV::getNearestValues(
     {
        lineSelectedColValues.push_back(atof(lineValuesStrVector[m_cols[c]].c_str()));
     }
+
+//
 
     assert(lineSelectedColValues.size()==m_cols.size());
     unsigned int step = floor(double (m_noRows)/double(m_noRowsOfPosSamples));
