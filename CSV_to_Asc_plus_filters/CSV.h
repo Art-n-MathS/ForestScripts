@@ -32,7 +32,7 @@ public:
     /// @note Memory needs to be freed outside this class
     /// @param[in] i_vl (voxel lenght): the size of the pixel
     //-------------------------------------------------------------------------
-    ASC *getASC(double i_vl, const std::string &i_noDataValue)const;
+    ASC *getASC(double i_vl, double i_noDataValue)const;
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------

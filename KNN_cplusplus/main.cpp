@@ -45,11 +45,11 @@
 /* example: -ipos "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_dead_cylinder_vl0.8_H12_R4_scaled.csv"
             -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv"
             -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4_scaled_forTesting.csv"
-            -heightCol 3 -keeps 0 1 2 3 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6
+            -heightCol 3 -keeps 0 1 2 3 4 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6
             -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN.csv" -k 7 -heightThres 17
 
   example in a single line:
--ipos "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_dead_cylinder_vl0.8_H12_R4_scaled.csv" -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv" -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4.csv"  -heightCol 3 -keeps 0 1 2 3 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6 -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_noThresheight.csv" -k 7 -heightThres -17
+-ipos "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_dead_cylinder_vl0.8_H12_R4_scaled.csv" -ineg "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_live_cylinder_vl0.8_H12_R4_scaled.csv" -iall "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/all_all_cylinder_vl0.8_H12_R4.csv"  -heightCol 3 -keeps 0 1 2 3 4 -cols 4 5 6 7 8 9 10 11 12 13 -weights 15 14 13 12 11 10 9 8 7 6 -oKKN "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_noThresheight.csv" -k 7 -heightThres -17
 
 */
 //-----------------------------------------------------------------------------

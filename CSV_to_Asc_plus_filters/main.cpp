@@ -30,17 +30,20 @@
 ///              -pCol <column containing pixel values / KNN results>
 ///              -xCol <column containing the x positions of the pixels>
 ///              -yCol <column containing the y positions of the pixels>
+///              -hCol <column containing height values>
+///              -oHSnP <dir for storing heights ascs with SnP noise reduction>
 
 ///
 /* example: -inDir "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_csv_seperated"
             -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs"
             -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp"
+            -oHSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_height_snp"
             -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_med"
-            -pCol 4 -xCol 1 -yCol 2
+            -pCol 5 -xCol 1 -yCol 2 -hCol 4
 
 
   example in a single line:
--inDir "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_csv_seperated" -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs" -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp" -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_smth" -pCol 4 -xCol 1 -yCol 2
+-inDir "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_csv_seperated" -oHSnP "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\processing\D3.1\Val1\H12_R4\Ascs_height_snp" -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs" -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp" -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_smth" -pCol 5 -xCol 1 -yCol 2 -hCol 4
 */
 //-----------------------------------------------------------------------------
 
@@ -55,11 +58,14 @@ int main(int argc, char *argv[])
    tags["-pCol" ] = 5; /// -pCol <column containing pixel values / KNN results>
    tags["-xCol" ] = 6; /// -xCol <column containing the x positions of the pixels>
    tags["-yCol" ] = 7; /// -yCol <column containing the y positions of the pixels>
+   tags["-hCol" ] = 8; /// -hCol <column containing height values>
+   tags["-oHSnP"] = 9; /// -oHSnP <dir for storing heights ascs with SnP noise reduction>
 
-   std::string inDir(""), oAsc(""), oSnP(""), oSmth("");
-   unsigned short int pCol(1000),xCol(1000),yCol(1000);
 
-   std::string noDataValue("-100");
+   std::string inDir(""), oAsc(""), oSnP(""), oSmth(""), oHSnP("");
+   unsigned short int pCol(1000),xCol(1000),yCol(1000),hCol(1000);
+
+   double noDataValue(-100.0);
    double vl=0.8;
 
    // parse files
@@ -131,6 +137,24 @@ int main(int argc, char *argv[])
           }
           break;
       }
+      case 8: // -hCol <column containing height values>
+      {
+          argvIndex++;
+          if (argvIndex<argc)
+          {
+             hCol = atoi(argv[argvIndex]);
+          }
+          break;
+      }
+      case 9: // -oHSnP <dir for storing heights ascs with SnP noise reduction>
+      {
+          argvIndex++;
+          if (argvIndex<argc)
+          {
+             oHSnP = argv[argvIndex];
+          }
+          break;
+      }
       default:
       {
          std::cerr << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
@@ -140,7 +164,7 @@ int main(int argc, char *argv[])
       argvIndex++;
    }
    if(inDir=="" || oAsc=="" || oSnP=="" || oSmth=="" || pCol==1000 ||
-           xCol==1000 || yCol==1000)
+           xCol==1000 || yCol==1000 || hCol==1000 || oHSnP=="")
    {
       std::cerr << "Please define all parameters as follow:\n"
                 << "CSV_to_Asc_plus_filters \n"
@@ -150,20 +174,25 @@ int main(int argc, char *argv[])
                 << "              -oSmth <dir for storing asc after averaging filtering>\n"
                 << "              -pCol <column containing pixel values / KNN results>\n"
                 << "              -xCol <column containing the x positions of the pixels>\n"
-                << "              -yCol <column containing the y positions of the pixels>\n";
+                << "              -yCol <column containing the y positions of the pixels>\n"
+                << "              -hCol <column containing height values>\n"
+                << "               -oHSnP <dir for storing heights ascs with SnP noise reduction>\n";
       std::exit(EXIT_FAILURE);
    }
    if (inDir.c_str()[inDir.size()-1]!='/') inDir+="/";
    if (oAsc.c_str()[oAsc.size()-1]!='/') oAsc+="/";
    if (oSnP.c_str()[oSnP.size()-1]!='/') oSnP+="/";
    if (oSmth.c_str()[oSmth.size()-1]!='/') oSmth+="/";
+   if (oHSnP.c_str()[oHSnP.size()-1]!='/') oHSnP+="/";
 
 
    std::cout << "inDir=" << inDir << "\n";
    std::cout << "oAsc =" << oAsc << "\n";
    std::cout << "oSnP =" << oSnP << "\n";
    std::cout << "oMed =" << oSmth << "\n";
-   std::cout << "pCol, xCol, yCol : " <<pCol << ", " << xCol<< ", " <<yCol << "\n";
+   std::cout << "oHSnP =" << oHSnP << "\n";
+   std::cout << "pCol, xCol, yCol, hCol : " <<pCol << ", " << xCol<< ", " <<yCol
+             << ", " << hCol << "\n";
 
 
    DIR *dir;
@@ -176,10 +205,21 @@ int main(int argc, char *argv[])
        if(currentCSV.size()>4 && currentCSV.c_str()[currentCSV.size()-1]=='v')
        {
           std::string currentCSVwithDir = inDir + currentCSV ;
+          std::cout << "currentCSVwithDir: " << currentCSVwithDir << "\n";
+
+          CSV csvCurrentHeight(currentCSVwithDir,xCol,yCol,hCol);
+          ASC *ascCurrentH = csvCurrentHeight.getASC(vl,noDataValue);
+          ascCurrentH->saltNpepper();
+          ascCurrentH->exportTo(oHSnP+currentCSV+".asc");
+          delete ascCurrentH;
+
           CSV csvCurrent(currentCSVwithDir,xCol,yCol,pCol);
+
 
           ASC *ascCurrent = csvCurrent.getASC(vl,noDataValue);
           ascCurrent->exportTo(oAsc+currentCSV+".asc");
+          std::cout << "---------------------\n";
+
           ascCurrent->saltNpepper();
           ascCurrent->exportTo(oSnP+currentCSV+".asc");
           ascCurrent->smooth();
