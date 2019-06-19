@@ -15,6 +15,12 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    CSV.cpp \
+    ASC.cpp
 
 QMAKE_CXXFLAGS += -std=c++11
+
+HEADERS += \
+    CSV.h \
+    ASC.h
