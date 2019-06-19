@@ -30,8 +30,9 @@ public:
     /// the x,y values to find the positions of the pixels and the p values
     /// are assigned to the corresponding pixel values
     /// @note Memory needs to be freed outside this class
+    /// @param[in] i_vl (voxel lenght): the size of the pixel
     //-------------------------------------------------------------------------
-    ASC *getASC()const;
+    ASC *getASC(double i_vl, const std::string &i_noDataValue)const;
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------

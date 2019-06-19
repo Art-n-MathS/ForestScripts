@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <sys/stat.h>
 #include <iomanip>
-
+#include <algorithm>
 
 //-----------------------------------------------------------------------------
 CSV::CSV(
@@ -21,8 +21,6 @@ CSV::CSV(
         const unsigned short int i_pCol
         )
 {
-    std::cout << "   ****   pCol, xCol, yCol : " <<i_pCol << ", " << i_xCol<< ", " <<i_yCol << "\n";
-
     // read file and separe it into the unordered multi-map
     std::ifstream input_file; input_file.open(i_csvFileName.c_str());
     if(!input_file.is_open())
@@ -63,8 +61,16 @@ CSV::CSV(
 }
 
 //-----------------------------------------------------------------------------
-ASC *CSV::getASC()const
+ASC *CSV::getASC(double i_vl,const std::string &i_noDataValue)const
 {
+    double xllcorner(*std::min_element(m_xValues.begin(), m_xValues.end())),
+           yllcorner(*std::min_element(m_yValues.begin(), m_yValues.end())),
+           xmax(*std::max_element(m_xValues.begin(), m_xValues.end())),
+           ymax(*std::max_element(m_yValues.begin(), m_yValues.end()));
+
+    unsigned int ncolsX(ceil((xmax-xllcorner)/i_vl)),
+                 ncolsY(ceil((xmax-xllcorner)/i_vl));
+
     ASC *currentASC = new ASC();
 
     return currentASC;

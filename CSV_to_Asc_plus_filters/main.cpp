@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
    std::string inDir(""), oAsc(""), oSnP(""), oSmth("");
    unsigned short int pCol(1000),xCol(1000),yCol(1000);
 
+   std::string noDataValue("-100");
+   double vl=0.8;
 
    // parse files
    int argvIndex = 1;
@@ -175,7 +177,8 @@ int main(int argc, char *argv[])
        {
           std::string currentCSVwithDir = inDir + currentCSV ;
           CSV csvCurrent(currentCSVwithDir,xCol,yCol,pCol);
-          ASC *ascCurrent = csvCurrent.getASC();
+
+          ASC *ascCurrent = csvCurrent.getASC(vl,noDataValue);
           ascCurrent->exportTo(oAsc+currentCSV+".asc");
           ascCurrent->saltNpepper();
           ascCurrent->exportTo(oSnP+currentCSV+".asc");
