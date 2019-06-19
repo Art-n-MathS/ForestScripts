@@ -27,7 +27,7 @@
 ///              -oAsc <dir for storing unprocessed asc files>
 ///              -oSnP <dir for storing asc after salt n pepper noise filter>
 ///              -oMed <dir for storing asc after median filtering>
-///              -pcol <column containing pixel values / KNN results>
+///              -pCol <column containing pixel values / KNN results>
 ///              -xCol <column containing the x positions of the pixels>
 ///              -yCol <column containing the y positions of the pixels>
 
@@ -36,11 +36,11 @@
             -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs"
             -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp"
             -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_med"
-            -pcol 3 -xCol 3 -yCol 4
+            -pCol 4 -xCol 1 -yCol 2
 
 
   example in a single line:
--inDir "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_csv_seperated" -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs" -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp" -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_smth" -pcol 3 -xCol 3 -yCol 4
+-inDir "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/KNN_csv_seperated" -oAsc "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs" -oSnP "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp" -oSmth "C:/Users/milto/Documents/TEPAK/Marie_Curie_IF/processing/D3.1/Val1/H12_R4/Ascs_snp_smth" -pCol 4 -xCol 1 -yCol 2
 */
 //-----------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
    tags["-oAsc" ] = 2; /// -oAsc <dir for storing unprocessed asc files>
    tags["-oSnP" ] = 3; /// -oSnP <dir for storing asc after salt n pepper noise filter>
    tags["-oSmth"] = 4; /// -oSmth <dir for storing asc after averaging filtering>
-   tags["-pcol" ] = 5; /// -pcol <column containing pixel values / KNN results>
+   tags["-pCol" ] = 5; /// -pCol <column containing pixel values / KNN results>
    tags["-xCol" ] = 6; /// -xCol <column containing the x positions of the pixels>
    tags["-yCol" ] = 7; /// -yCol <column containing the y positions of the pixels>
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
           }
           break;
       }
-      case 5: // -pcol <column containing pixel values / KNN results>
+      case 5: // -pCol <column containing pixel values / KNN results>
       {
           argvIndex++;
           if (argvIndex<argc)
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
                 << "              -oAsc <dir for storing unprocessed asc files>\n"
                 << "              -oSnP <dir for storing asc after salt n pepper noise filter>\n"
                 << "              -oSmth <dir for storing asc after averaging filtering>\n"
-                << "              -pcol <column containing pixel values / KNN results>\n"
+                << "              -pCol <column containing pixel values / KNN results>\n"
                 << "              -xCol <column containing the x positions of the pixels>\n"
                 << "              -yCol <column containing the y positions of the pixels>\n";
       std::exit(EXIT_FAILURE);
@@ -182,68 +182,6 @@ int main(int argc, char *argv[])
           ascCurrent->smooth();
           ascCurrent->exportTo(oSmth+currentCSV+".asc");
           delete ascCurrent;
-
-
-
-//             if(!nextCSV.is_open())
-//             {
-//                std::cerr<<"ERROR: File was not loaded\n";
-//                continue;
-//             }
-//             std::string line;
-//             if(std::getline(nextCSV,line))
-//             {
-//                if(labels.size()==0)
-//                {
-//                   allCSVfile << line << "\n";
-//                   std::istringstream ss( line );
-//                   while (ss)
-//                   {
-//                      std::string subS;
-//                      if (!std::getline( ss, subS, ',' )) break;
-//                      labels.push_back(subS);
-//                   }
-//                   for(auto &l : labels) for (auto & c: l) c = std::toupper(c);
-//                }
-//                else
-//                {
-//                   std::vector<std::string> clabels;
-//                   std::istringstream ss( line );
-//                   while (ss)
-//                   {
-//                      std::string subS;
-//                      if (!std::getline( ss, subS, ',' )) break;
-//                      clabels.push_back(subS);
-//                   }
-//                   for(auto &l : clabels) for (auto & c: l) c = std::toupper(c);
-//                   if(labels.size()!=clabels.size())
-//                   {
-//                      std::cout << "ERROR: header of file do not match with the current header\n";
-//                      continue;
-//                   }
-//                   unsigned int countSame(0);
-//                   for(unsigned int i=0; i<labels.size(); ++i)
-//                   {
-//                      countSame+=(labels[i]==clabels[i]);
-//                   }
-//                   if(countSame!=labels.size())
-//                   {
-//                       std::cout << "ERROR: header of file do not match with the current header\n";
-//                       continue;
-//                   }
-//                }
-//                count++;
-//                while(std::getline(nextCSV,line))
-//                {
-//                    allCSVfile << line << "\n";
-//                }
-//                nextCSV.close();
-//             }
-//             else
-//             {
-//                std::cout << "WARNING: File is empty\n";
-//             }
-//          }
        }
      }
      closedir (dir);
