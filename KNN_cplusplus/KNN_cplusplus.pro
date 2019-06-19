@@ -22,4 +22,5 @@ SOURCES += main.cpp \
 HEADERS += \
     CSV.h \
     CSVManager.h
+
 QMAKE_CXXFLAGS += -std=c++11
