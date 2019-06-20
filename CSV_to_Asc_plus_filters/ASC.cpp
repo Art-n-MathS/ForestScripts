@@ -36,6 +36,7 @@ unsigned int ASC::getIndex(const double i_x, const double i_y) const
    unsigned short int row = ceil((i_y-m_yllcorner)/m_cellsize);
 
    assert(col<m_ncols);
+//   std::cout << "  ++ " << row<< " " << m_nrows << "\n";
    assert(row<m_nrows);
    return getIndexInt(col,row);
 }
@@ -47,7 +48,7 @@ unsigned int ASC::getIndexInt(
         ) const
 {
    assert(i_c+i_r*m_ncols<m_values.size());
-   return i_c+i_r*m_ncols;
+   return i_c+(m_nrows-i_r-1)*m_ncols;
 }
 
 
@@ -232,7 +233,7 @@ void ASC::exportTo(const std::string &i_fileName) const
            << "cellsize "     << m_cellsize << "\n"
            << "NODATA_value " << m_NODATA_value << "\n";
 
-    for(short int r=m_nrows-1;r>=0; --r)
+    for(short int r=0;r<m_nrows; ++r)
     {
        for(unsigned short int c=0;c<m_ncols; ++c)
        {
