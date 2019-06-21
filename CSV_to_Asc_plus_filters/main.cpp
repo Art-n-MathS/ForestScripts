@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
    unsigned short int pCol(1000),xCol(1000),yCol(1000),hCol(1000);
 
    double noDataValue(-100.0);
-   double vl=0.8;
+   double vl=1.0;
 
    // parse files
    int argvIndex = 1;
@@ -210,21 +210,36 @@ int main(int argc, char *argv[])
           CSV csvCurrentHeight(currentCSVwithDir,xCol,yCol,hCol);
           ASC *ascCurrentH = csvCurrentHeight.getASC(vl,noDataValue);
           ascCurrentH->saltNpepper();
-          ascCurrentH->exportTo(oHSnP+currentCSV+".asc");
-          delete ascCurrentH;
+          ascCurrentH->exportASCTo(oHSnP+currentCSV+".asc");
 
-          CSV csvCurrent(currentCSVwithDir,xCol,yCol,pCol);
-
+           CSV csvCurrent(currentCSVwithDir,xCol,yCol,pCol);
 
           ASC *ascCurrent = csvCurrent.getASC(vl,noDataValue);
-          ascCurrent->exportTo(oAsc+currentCSV+".asc");
-          std::cout << "---------------------\n";
-
+          ascCurrent->exportASCTo(oAsc+currentCSV+".asc");
+//          std::cout << "---------------------\n";
           ascCurrent->saltNpepper();
-          ascCurrent->exportTo(oSnP+currentCSV+".asc");
+          ascCurrent->exportASCTo(oSnP+currentCSV+".asc");
           ascCurrent->smooth();
-          ascCurrent->exportTo(oSmth+currentCSV+".asc");
+          ascCurrent->exportASCTo(oSmth+currentCSV+".asc");
+
+
+          // apply thresholds
+          std::vector<double> *heightValuesPointer=ascCurrentH->getValuesPointer();
+          ascCurrent->threshold(20.0,heightValuesPointer);
+          ascCurrent->exportASCTo(oSmth+"/thresHeight20/"+currentCSV+".asc");
+          ascCurrent->threshold(50.0);
+          ascCurrent->exportASCTo(oSmth+"/thresKNN50/"+currentCSV+".asc");
+          ascCurrent->saltNpepperWithNoValue();
+          ascCurrent->exportASCTo(oSmth+"/thresKNN50_snp/"+currentCSV+".asc");
+
+
+          std::cout << (oSmth+"/thresKNN50_snp/positions/",currentCSV+".csv") << "\n";
+          ascCurrent->exportMidOfSegments(oSmth+"/thresKNN50_snp/positions/"+currentCSV+".csv",currentCSV);
+
+
           delete ascCurrent;
+          delete ascCurrentH;
+
        }
      }
      closedir (dir);
