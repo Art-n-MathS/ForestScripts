@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
           ascCurrent->exportASCTo(oSmth+"/thresHeight20/"+currentCSV+".asc");
           ascCurrent->threshold(50.0);
           ascCurrent->exportASCTo(oSmth+"/thresKNN50/"+currentCSV+".asc");
-          ascCurrent->saltNpepperWithNoValue();
+          ascCurrent->saltNpepperIncNoValue();
           ascCurrent->exportASCTo(oSmth+"/thresKNN50_snp/"+currentCSV+".asc");
 
 

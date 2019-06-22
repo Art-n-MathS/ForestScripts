@@ -38,7 +38,7 @@ unsigned int ASC::getIndex(const double i_x, const double i_y) const
    short int row = ceil((i_y-m_yllcorner)/m_cellsize);
 
    if(col<0)col=0;   if(row<0)row=0;
-
+   if(col>=m_ncols)col=m_ncols-1;   if(row>=m_nrows)row=m_nrows-1;
 //  std::cout << "  ++ " << col<< " " << m_ncols << "\n";
    assert(col<m_ncols);
 //   std::cout << "  ++ " << row<< " " << m_nrows << "\n";
@@ -148,9 +148,9 @@ void ASC::saltNpepper()
 
 
 //-----------------------------------------------------------------------------
-void ASC::saltNpepperWithNoValue()
+void ASC::saltNpepperIncNoValue()
 {
-    std::vector<double> tmp_values(m_ncols*m_nrows);
+    std::vector<double> tmp_values(m_ncols*m_nrows,m_NODATA_value);
     assert(tmp_values.size()==m_values.size());
    std::cout << "Applying Salt and Pepper filtering \n";
 

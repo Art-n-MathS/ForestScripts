@@ -78,7 +78,7 @@ public:
     /// reduction and NoValue is a value. If median is noValue then noValue is
     /// given
     //-------------------------------------------------------------------------
-    void saltNpepperWithNoValue();
+    void saltNpepperIncNoValue();
     //-------------------------------------------------------------------------
     /// @brief method that returns a pointer to the ascs values
     //-------------------------------------------------------------------------

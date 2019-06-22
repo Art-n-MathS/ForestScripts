@@ -68,13 +68,13 @@ ASC *CSV::getASC(double i_vl,double i_noDataValue)const
            xmax(*std::max_element(m_xValues.begin(), m_xValues.end())),
            ymax(*std::max_element(m_yValues.begin(), m_yValues.end()));
 
-
+//    xllcorner-=i_vl;
+//    yllcorner-=i_vl;
     unsigned int ncolsX(ceil((xmax-xllcorner)/i_vl)),
                  ncolsY(ceil((xmax-xllcorner)/i_vl));
-    xllcorner-=i_vl;
-    yllcorner-=i_vl;
-    ncolsX=(ceil((xmax-xllcorner)/i_vl))+2,
-    ncolsY=(ceil((ymax-yllcorner)/i_vl))+2;
+
+    ncolsX=(ceil((xmax-xllcorner)/i_vl))/*+2*/,
+    ncolsY=(ceil((ymax-yllcorner)/i_vl))/*+2*/;
 
 //    std::cout << "ncols "        << ncolsX << "\n"
 //              << "nrows "        << ncolsY << "\n"
